@@ -68,7 +68,7 @@ user_handle <- function(req) {
       }
     }
 
-    if (is.null(parsed_body$name)) {
+    if (is.null(parsed_body$name) || parsed_body$name == "+") {
       return(list(
         status = 400,
         headers = list("Content-Type" = "application/json"),
@@ -115,7 +115,7 @@ user_handle <- function(req) {
       }
     }
 
-    if (is.null(parsed_body$name) || is.null(parsed_body$id)) {
+    if (is.null(parsed_body$name) || parsed_body$name == "+" || is.null(parsed_body$id) || parsed_body$id == "+") {
       return(list(
         status = 400,
         headers = list("Content-Type" = "application/json"),
@@ -162,7 +162,7 @@ user_handle <- function(req) {
       }
     }
 
-    if (is.null(parsed_body$id)) {
+    if (is.null(parsed_body$id) || parsed_body$id == "+") {
       return(list(
         status = 400,
         headers = list("Content-Type" = "application/json"),

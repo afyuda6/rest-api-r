@@ -4,11 +4,9 @@ source("handlers/user.r")
 api <- function(req) {
   path <- req$PATH_INFO
 
-  path_parts <- strsplit(path, "/")[[1]]
-  if (path_parts[2] == "users") {
+  if (path == "/users" || path == "/users/") {
     return(user_handle(req))
-  }
-  else {
+  } else {
     return(list(
       status = 404,
       headers = list("Content-Type" = "application/json"),
