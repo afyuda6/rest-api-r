@@ -1,3 +1,4 @@
+library(jsonlite)
 source("database/sqlite.r")
 
 handle_read_users <- function() {
