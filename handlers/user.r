@@ -1,13 +1,21 @@
 library(jsonlite)
 source("database/sqlite.r")
 
+add_cors_headers <- function() {
+  return(list(
+    "Access-Control-Allow-Origin" = "*",
+    "Access-Control-Allow-Methods" = "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers" = "Content-Type"
+  ))
+}
+
 handle_read_users <- function() {
   con <- get_db_connection()
   users <- dbGetQuery(con, "SELECT * FROM users")
   dbDisconnect(con)
   return(list(
     status = 200,
-    headers = list("Content-Type" = "application/json"),
+    headers = c("Content-Type" = "application/json", add_cors_headers()),
     body = jsonlite::toJSON(list(
       status = "OK",
       code = 200,
@@ -21,7 +29,7 @@ handle_create_user <- function(req) {
   if (length(body_raw) == 0 || body_raw == "") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -43,7 +51,7 @@ handle_create_user <- function(req) {
   if (is.null(parsed_body$name) || parsed_body$name == "+") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -56,7 +64,7 @@ handle_create_user <- function(req) {
   dbDisconnect(con)
   return(list(
     status = 201,
-    headers = list("Content-Type" = "application/json"),
+    headers = c("Content-Type" = "application/json", add_cors_headers()),
     body = jsonlite::toJSON(list(
       status = "Created",
       code = 201
@@ -69,7 +77,7 @@ handle_update_user <- function(req) {
   if (length(body_raw) == 0 || body_raw == "") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -94,7 +102,7 @@ handle_update_user <- function(req) {
     parsed_body$id == "+") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -107,7 +115,7 @@ handle_update_user <- function(req) {
   dbDisconnect(con)
   return(list(
     status = 200,
-    headers = list("Content-Type" = "application/json"),
+    headers = c("Content-Type" = "application/json", add_cors_headers()),
     body = jsonlite::toJSON(list(
       status = "OK",
       code = 200
@@ -120,7 +128,7 @@ handle_delete_user <- function(req) {
   if (length(body_raw) == 0 || body_raw == "") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -142,7 +150,7 @@ handle_delete_user <- function(req) {
   if (is.null(parsed_body$id) || parsed_body$id == "+") {
     return(list(
       status = 400,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Bad Request",
         code = 400,
@@ -155,7 +163,7 @@ handle_delete_user <- function(req) {
   dbDisconnect(con)
   return(list(
     status = 200,
-    headers = list("Content-Type" = "application/json"),
+    headers = c("Content-Type" = "application/json", add_cors_headers()),
     body = jsonlite::toJSON(list(
       status = "OK",
       code = 200
@@ -175,10 +183,16 @@ user_handler <- function(req) {
       handle_update_user(req)
     } else if (method == "DELETE") {
       handle_delete_user(req)
+    } else if (method == "OPTIONS") {
+      return(list(
+        status = 200,
+        headers = c("Content-Type" = "application/json", add_cors_headers()),
+        body = ""
+      ))
     } else {
       return(list(
         status = 405,
-        headers = list("Content-Type" = "application/json"),
+        headers = c("Content-Type" = "application/json", add_cors_headers()),
         body = jsonlite::toJSON(list(
           status = "Method Not Allowed",
           code = 405
@@ -188,7 +202,7 @@ user_handler <- function(req) {
   } else {
     return(list(
       status = 404,
-      headers = list("Content-Type" = "application/json"),
+      headers = c("Content-Type" = "application/json", add_cors_headers()),
       body = jsonlite::toJSON(list(
         status = "Not Found",
         code = 404
